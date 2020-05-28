@@ -22,6 +22,7 @@ Scenario:
 
 --previously access port, becomes trunk port after change
 
+
 Automation Steps [High-level]:
 1) Input switches where VLANs need to be reconfigured
 2) Input ports on each switch where VLANs need to be reconfigured
