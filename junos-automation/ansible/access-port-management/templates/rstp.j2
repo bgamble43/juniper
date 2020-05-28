@@ -1,0 +1,7 @@
+protocols {
+    rstp {
+    {% for interface in interfaces %}
+    interface {{ interface.name }};
+    {% endfor %}
+}
+}

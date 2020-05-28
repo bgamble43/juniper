@@ -6,13 +6,17 @@ interfaces {
                 replace: vlan {
                     members [ {{ interface.vlans | list | join(" ") }} ];
                 }
-{#
-            {% if vlan/members|length > 1 %}
-                interface-mode trunk;
-            {% endif %}
-#}
-            }
+    {% if interface.vlans|length > 1 %}
+            interface-mode trunk;
+    {% endif %}
         }
-    }
+        }
+    {% if interface.native_vlan_id %}
+    native-vlan-id {{ interface.native_vlan_id }};
+    {% endif %}
+  {% if interface.description %}
+  description "{{ interface.description }}";
+  {% endif %}
+  }
 {% endfor %}
 }

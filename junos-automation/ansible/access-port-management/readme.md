@@ -20,7 +20,9 @@ Automation Steps [High-level]:
 3) Input new VLAN or VLANs
    If multiple VLANs defined, configure as trunk port
    If single VLAN defined, configure as access port
-   Allow trunk override to configure single-vlan port as trunk
+   Set native vlan id, if provided
+4) Add interface to [protocols rstp]
+5) Add interface to [poe]
 4) Input port description
 5) Commit Confirm
 6) Commit

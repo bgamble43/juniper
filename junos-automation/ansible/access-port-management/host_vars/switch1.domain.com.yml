@@ -4,9 +4,13 @@ interfaces:
     description: Wired port
     vlans:
       - vlan_a
+    native_vlan_id:
+    poe: "no"
   - name: ge-0/0/9
     description: Access point, SSID-PorkChop5
     vlans:
       - vlan_b
       - vlan_c
+    native_vlan_id: 901
+    poe: "yes"
 ...

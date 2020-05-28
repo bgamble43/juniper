@@ -1,6 +1,6 @@
 ---
-- name: Configure access ports
-  hosts: test
+- name: CONFIGURE [interfaces], [poe] AND [protocols rstp]
+  hosts: remove
   roles:
     - Juniper.junos
   connection: local
@@ -12,55 +12,69 @@
     config_component_dir: "{{ config_dir }}/component-{{ inventory_hostname }}"
 
     config_file_access_ports: "{{ config_component_dir }}/access_ports.conf"
+    config_file_rstp: "{{ config_component_dir }}/rstp.conf"
+    config_file_poe: "{{ config_component_dir }}/poe.conf"
 
     device_config_file: "{{ config_dir }}/{{ inventory_hostname }}.conf"
     diffs_file: "{{ config_dir }}/{{ inventory_hostname }}.diff"
 
   tasks:
-    - name: Prepare top-level config directory
+    - name: PREPARE TOP-LEVEL CONFIG DIRECTORY
       file:
         path: "{{ config_dir }}"
         state: directory
       run_once: yes
       delegate_to: localhost
 
-    - name: Prepare device subdirectories
+    - name: PREPARE DEVICE SUBDIRECTORIES
       file:
         path: "{{ config_component_dir }}"
         state: directory
       delegate_to: localhost
 
-    - name: Generate device access port configs from template
+    - name: GENERATE DEVICE ACCESS PORT CONFIGS FROM TEMPLATE
       template:
         src: templates/access-ports.j2
         dest: "{{ config_file_access_ports }}"
 
-    - name: Assemble device configs
+    - name: GENERATE [protocols rstp] CONFIG
+      template:
+        src: templates/rstp.j2
+        dest: "{{ config_file_rstp }}"
+
+    - name: GENERATE [poe] CONFIG
+      template:
+        src: templates/poe.j2
+        dest: "{{ config_file_poe }}"
+
+    - name: ASSEMBLE DEVICE CONFIGS
       assemble:
         src: "{{ config_component_dir }}"
         dest: "{{ device_config_file }}"
 
     # - fail: msg="Pause to debug"
 
-    - name: Apply configuration
+    - name: APPLY CONFIGURATION
       juniper_junos_config:
         load: replace
         src: "{{ device_config_file }}"
         provider: "{{ provider_vars }}"
-        # commit: true
-        # confirmed: 5
+        commit: true
+        confirmed: 5
         diff: yes
         diffs_file: "{{ diffs_file }}"
-        comment: "Ben added this comment"
+        comment: "apm.yml commit, requesting confirmation"
       register: commit_results
 
-    - name: Print config diff
+    - name: PRINT CONFIG DIFF
       debug: var=commit_results.diff_lines
       when: commit_results.diff_lines is defined
-#
-#    - name: Confirm
-#      juniper_junos_config:
-#        commit: true
-#        comment: "Ben added this comment - commit confirmed"
-#      register: confirm_results
-#
+
+    - name: CONFIRM
+      juniper_junos_config:
+        provider: "{{ provider_vars }}"
+        commit: true
+        comment: "apm.yml commit, confirmed, rollback aborted"
+      register: confirm_results
+
+...
