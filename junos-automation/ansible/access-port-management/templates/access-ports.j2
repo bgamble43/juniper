@@ -1,0 +1,18 @@
+interfaces {
+{% for interface in interfaces %}
+    {{ interface.name }} {
+        unit 0 {
+            family ethernet-switching {
+                replace: vlan {
+                    members [ {{ interface.vlans | list | join(" ") }} ];
+                }
+{#
+            {% if vlan/members|length > 1 %}
+                interface-mode trunk;
+            {% endif %}
+#}
+            }
+        }
+    }
+{% endfor %}
+}

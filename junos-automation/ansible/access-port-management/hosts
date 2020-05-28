@@ -1,0 +1,9 @@
+[switches]
+hq.mdf.sw1
+hq.idf1.sw1
+br1.mdf.sw1
+br1.idf1.sw1
+br2.mdf.sw1
+
+[test]
+switch1.domain.com 

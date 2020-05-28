@@ -1,0 +1,12 @@
+---
+interfaces:
+  - name: ge-0/0/2
+    description: Office printer
+    vlans:
+      - 100
+  - name: ge-0/0/3
+    description: Office IP phone
+    vlan:
+      - 110
+      - 120
+...

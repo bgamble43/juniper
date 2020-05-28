@@ -1,0 +1,66 @@
+---
+- name: Configure access ports
+  hosts: test
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+    config_dir: tmp
+    config_component_dir: "{{ config_dir }}/component-{{ inventory_hostname }}"
+
+    config_file_access_ports: "{{ config_component_dir }}/access_ports.conf"
+
+    device_config_file: "{{ config_dir }}/{{ inventory_hostname }}.conf"
+    diffs_file: "{{ config_dir }}/{{ inventory_hostname }}.diff"
+
+  tasks:
+    - name: Prepare top-level config directory
+      file:
+        path: "{{ config_dir }}"
+        state: directory
+      run_once: yes
+      delegate_to: localhost
+
+    - name: Prepare device subdirectories
+      file:
+        path: "{{ config_component_dir }}"
+        state: directory
+      delegate_to: localhost
+
+    - name: Generate device access port configs from template
+      template:
+        src: templates/access-ports.j2
+        dest: "{{ config_file_access_ports }}"
+
+    - name: Assemble device configs
+      assemble:
+        src: "{{ config_component_dir }}"
+        dest: "{{ device_config_file }}"
+
+    # - fail: msg="Pause to debug"
+
+    - name: Apply configuration
+      juniper_junos_config:
+        load: replace
+        src: "{{ device_config_file }}"
+        provider: "{{ provider_vars }}"
+        # commit: true
+        # confirmed: 5
+        diff: yes
+        diffs_file: "{{ diffs_file }}"
+        comment: "Ben added this comment"
+      register: commit_results
+
+    - name: Print config diff
+      debug: var=commit_results.diff_lines
+      when: commit_results.diff_lines is defined
+#
+#    - name: Confirm
+#      juniper_junos_config:
+#        commit: true
+#        comment: "Ben added this comment - commit confirmed"
+#      register: confirm_results
+#

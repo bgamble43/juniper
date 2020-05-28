@@ -1,0 +1,12 @@
+---
+interfaces:
+  - name: ge-0/0/8
+    description: Wired port
+    vlans:
+      - vlan_a
+  - name: ge-0/0/9
+    description: Access point, SSID-PorkChop5
+    vlans:
+      - vlan_b
+      - vlan_c
+...

@@ -1,0 +1,5 @@
+username: notTheRealUser
+password: "___notTheRealPassWord___"
+provider_vars:
+  user: "{{ username }}"
+  passwd: "{{ password }}"
