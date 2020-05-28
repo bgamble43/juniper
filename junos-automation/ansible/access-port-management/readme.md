@@ -1,9 +1,9 @@
 ## Versions Used:
-'''
+```
   ansible 2.8.9
   ...
   python version = 3.7.3 (default, Dec 13 2019, 19:58:14) [Clang 11.0.0 (clang-1100.0.33.17)]
-'''
+```
 ## Scenario:
 - VLAN on switch needs changed
 - either the config is blank (default vlan)
