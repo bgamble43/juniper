@@ -5,13 +5,21 @@ ansible 2.8.9
 
 Scenario
 -VLAN on switch needs changed
+
 -either the config is blank (default vlan)
+
 -or the config is wrong, intentionally inactive/unconfigured vlan
+
 -or the config has changed, new device installed (was previously an IP phone, but is now a security camera)
+
 --this could also have a few options
+
 --previously trunk port, remains trunk port after change
+
 --previously trunk port, becomes access port after change
+
 --previously access port, remains access port after change
+
 --previously access port, becomes trunk port after change
 
 Automation Steps [High-level]:
