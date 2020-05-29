@@ -1,0 +1,40 @@
+{# Instantiate interface in case it was unconfigured, add dummy vlan list so you can deterministicly remove vlans, then add configured vlans from host_vars YAML #}
+{% for interface in interfaces %}
+set interfaces {{ interface.name }}.0 family ethernet-switching
+set interfaces {{ interface.name }}.0 family ethernet-switching vlan members [ {{ interface.vlans | list | join(" ") }} ]
+delete interfaces {{ interface.name }}.0 family ethernet-switching vlan members
+set interfaces {{ interface.name }}.0 family ethernet-switching vlan members [ {{ interface.vlans | list | join(" ") }} ]
+
+{# If no native vlan is not defined, instantiate it so you can remove it, in case it was already configured #}
+{% if interface.native_vlan_id is none %}
+set interfaces {{ interface.name }} native-vlan-id 1
+delete interfaces {{ interface.name }} native-vlan-id 1
+
+{# NESTED: If more than one VLAN is defined, set port to trunk, else set port to access #}
+{% if interface.vlans|length > 1 %}
+{# Remove existing VLANs and configure new ones #}
+set interfaces {{ interface.name }}.0 family ethernet-switching interface-mode trunk
+
+{% elif interface.vlans|length == 1 %}
+{# Remove existing VLANs and configure new ones #}
+set interfaces {{ interface.name }}.0 family ethernet-switching interface-mode access
+
+{% endif %}
+
+{# If native vlan id is defined, set it if multiple VLANs are defined, remove it if only one VLAN is defined as an error check. Only interfaces w/ multiple VLANs should be set to trunk #}
+{% elif interface.native_vlan_id %}
+
+{# NESTED: If more than one VLAN is defined, set interface to trunk #}
+{% if interface.vlans|length > 1 %}
+set interfaces {{ interface.name }} native-vlan-id {{ interface.native_vlan_id }}
+set interfaces {{ interface.name }}.0 family ethernet-switching interface-mode trunk
+
+{% elif interface.vlans|length == 1 %}
+set interfaces {{ interface.name }} native-vlan-id 1
+delete interfaces {{ interface.name }} native-vlan-id 1
+set interfaces {{ interface.name }}.0 family ethernet-switching interface-mode access
+
+{% endif %}
+
+{% endif %}
+{% endfor %}

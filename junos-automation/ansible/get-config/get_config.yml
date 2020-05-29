@@ -1,0 +1,23 @@
+---
+- name: GET COMMITTED CONFIG
+  hosts: test
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  tasks:
+    - name: "GET CONFIGURATION IN xml FORMAT"
+      juniper_junos_config:
+        retrieve: "committed"
+        format: "xml"
+        filter: "<interfaces><interface><name>ge-0/0/8</name></interface></interfaces>"
+        provider: "{{ provider_vars }}"
+        dest: "{{ inventory_hostname }}-commited-config.txt"
+      register: response
+    - name: "Print result"
+      debug:
+        var: response

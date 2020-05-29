@@ -9,14 +9,18 @@
   vars:
     ansible_python_interpreter: "/usr/bin/python3"
     config_dir: tmp
-    config_component_dir: "{{ config_dir }}/component-{{ inventory_hostname }}"
+    # config_component_dir_load: "{{ config_dir }}/component-{{ inventory_hostname }}/load"
+    config_component_dir_set: "{{ config_dir }}/component-{{ inventory_hostname }}/set"
 
-    config_file_access_ports: "{{ config_component_dir }}/access_ports.conf"
-    config_file_rstp: "{{ config_component_dir }}/rstp.conf"
-    config_file_poe: "{{ config_component_dir }}/poe.conf"
+    # config_file_access_ports_load: "{{ config_component_dir_load }}/access_ports.conf"
+    config_file_access_ports_set: "{{ config_component_dir_set }}/access_ports.set"
+    config_file_rstp_set: "{{ config_component_dir_set }}/rstp.set"
+    config_file_poe_set: "{{ config_component_dir_set }}/poe.set"
 
-    device_config_file: "{{ config_dir }}/{{ inventory_hostname }}.conf"
-    diffs_file: "{{ config_dir }}/{{ inventory_hostname }}.diff"
+    # device_config_file_load: "{{ config_dir }}/load-{{ inventory_hostname }}.conf"
+    device_config_file_set: "{{ config_dir }}/set-{{ inventory_hostname }}.set"
+    diffs_file_set: "{{ config_dir }}/set-{{ inventory_hostname }}.diff"
+    # diffs_file_load: "{{ config_dir }}/load-{{ inventory_hostname }}.diff"
 
   tasks:
     - name: PREPARE TOP-LEVEL CONFIG DIRECTORY
@@ -26,55 +30,80 @@
       run_once: yes
       delegate_to: localhost
 
-    - name: PREPARE DEVICE SUBDIRECTORIES
+#    - name: PREPARE DEVICE SUBDIRECTORIES FOR LOAD
+#      file:
+#        path: "{{ config_component_dir_load }}"
+#        state: directory
+#      delegate_to: localhost
+
+    - name: PREPARE DEVICE SUBDIRECTORIES FOR SET
       file:
-        path: "{{ config_component_dir }}"
+        path: "{{ config_component_dir_set }}"
         state: directory
       delegate_to: localhost
 
-    - name: GENERATE DEVICE ACCESS PORT CONFIGS FROM TEMPLATE
+#    - name: GENERATE DEVICE ACCESS PORT CONFIGS FROM TEMPLATE FOR LOAD CMDS
+#      template:
+#        src: templates/access-ports-load.j2
+#        dest: "{{ config_file_access_ports_load }}"
+
+    - name: GENERATE DEVICE ACCESS PORT CONFIGS FROM TEMPLATE FOR SET CMDS
       template:
-        src: templates/access-ports.j2
-        dest: "{{ config_file_access_ports }}"
+        src: templates/access-ports-set.j2
+        dest: "{{ config_file_access_ports_set }}"
 
     - name: GENERATE [protocols rstp] CONFIG
       template:
         src: templates/rstp.j2
-        dest: "{{ config_file_rstp }}"
+        dest: "{{ config_file_rstp_set }}"
 
     - name: GENERATE [poe] CONFIG
       template:
         src: templates/poe.j2
-        dest: "{{ config_file_poe }}"
+        dest: "{{ config_file_poe_set }}"
 
-    - name: ASSEMBLE DEVICE CONFIGS
+#    - name: ASSEMBLE DEVICE CONFIGS FOR LOAD CMDS
+#      assemble:
+#        src: "{{ config_component_dir_load }}"
+#        dest: "{{ device_config_file_load }}"
+
+    - name: ASSEMBLE DEVICE CONFIGS FOR SET CMDS
       assemble:
-        src: "{{ config_component_dir }}"
-        dest: "{{ device_config_file }}"
+        src: "{{ config_component_dir_set }}"
+        dest: "{{ device_config_file_set }}"
 
     # - fail: msg="Pause to debug"
 
-    - name: APPLY CONFIGURATION
+#    - name: APPLY CONFIGURATION LOAD
+#      juniper_junos_config:
+#        load: replace
+#        src: "{{ device_config_file_load }}"
+#        provider: "{{ provider_vars }}"
+#        commit: true
+#        diff: yes
+#        diffs_file: "{{ diffs_file_load }}"
+#        check: false
+
+    - name: APPLY CONFIGURATION SET
       juniper_junos_config:
-        load: replace
-        src: "{{ device_config_file }}"
+        load: set
+        src: "{{ device_config_file_set }}"
         provider: "{{ provider_vars }}"
-        commit: true
-        confirmed: 5
+        format: set
         diff: yes
-        diffs_file: "{{ diffs_file }}"
-        comment: "apm.yml commit, requesting confirmation"
+        diffs_file: "{{ diffs_file_set }}"
       register: commit_results
 
     - name: PRINT CONFIG DIFF
       debug: var=commit_results.diff_lines
       when: commit_results.diff_lines is defined
 
-    - name: CONFIRM
-      juniper_junos_config:
-        provider: "{{ provider_vars }}"
-        commit: true
-        comment: "apm.yml commit, confirmed, rollback aborted"
-      register: confirm_results
-
+#    - name: COMMIT
+#      juniper_junos_config:
+#        provider: "{{ provider_vars }}"
+#        commit: true
+#        diff: yes
+#        diffs_file: "{{ diffs_file_set }}"
+#        comment: "apm.yml commit, requesting confirmation"
+#      register: commit_results
 ...

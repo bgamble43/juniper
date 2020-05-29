@@ -1,7 +1,3 @@
-protocols {
-    rstp {
-    {% for interface in interfaces %}
-    interface {{ interface.name }} edge;
-    {% endfor %}
-}
-}
+{% for interface in interfaces %}
+set protocols rstp interface {{ interface.name }} edge
+{% endfor %}
