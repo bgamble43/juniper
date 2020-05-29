@@ -1,0 +1,35 @@
+# Define subnets that will be shaped
+set policy-options prefix-list CUST_A_SUBNET 192.168.40.0/24
+set policy-options prefix-list CUST_A_SUBNET 2001:db8:192:40::/64
+set policy-options prefix-list CUST_B_SUBNET 192.168.50.0/24
+set policy-options prefix-list CUST_B_SUBNET 2001:db8:192:50::/64
+
+# Classify inet subnets on ingress of xe-0/1/1, allow all other traffic through without shaping
+set firewall family inet filter MF_CLASSIFIER_IPv4 term CUST_A from destination-prefix-list CUST_A_SUBNET
+set firewall family inet filter MF_CLASSIFIER_IPv4 term CUST_A then forwarding-class CUST_A_CLASS
+set firewall family inet filter MF_CLASSIFIER_IPv4 term CUST_B from destination-prefix-list CUST_B_SUBNET
+set firewall family inet filter MF_CLASSIFIER_IPv4 term CUST_B then forwarding-class CUST_B_CLASS
+set firewall family inet filter MF_CLASSIFIER_IPv4 term ELSE then accept
+set interfaces xe-0/1/1.0 family inet filter input MF_CLASSIFIER_IPv4
+
+# Classify inet6 subnets on ingress of xe-0/1/1
+set firewall family inet6 filter MF_CLASSIFIER_IPv6 term CUST_A from destination-prefix-list CUST_A_SUBNET
+set firewall family inet6 filter MF_CLASSIFIER_IPv6 term CUST_A then forwarding-class CUST_A_CLASS
+set firewall family inet6 filter MF_CLASSIFIER_IPv6 term CUST_B from destination-prefix-list CUST_B_SUBNET
+set firewall family inet6 filter MF_CLASSIFIER_IPv6 term CUST_B then forwarding-class CUST_B_CLASS
+set firewall family inet6 filter MF_CLASSIFIER_IPv6 term ELSE then accept
+set interfaces xe-0/1/1.0 family inet6 filter input MF_CLASSIFIER_IPv6
+
+# Map queues to specific forwarding classes
+set class-of-service forwarding-classes class CUST_A_CLASS queue-num 4
+set class-of-service forwarding-classes class CUST_B_CLASS queue-num 5
+
+# Map forwarding classes to specific schedulers, and apply scheduler map to interface xe-0/1/2.10
+set class-of-service scheduler-maps CUSTOMER_MAP forwarding-class CUST_A_CLASS scheduler CUST_A_SCHEDULER
+set class-of-service scheduler-maps CUSTOMER_MAP forwarding-class CUST_B_CLASS scheduler CUST_B_SCHEDULER
+set class-of-service interfaces xe-0/1/2 unit 10 scheduler-map CUSTOMER_MAP
+set interfaces xe-0/1/2 per-unit-scheduler
+
+# Configure shaping for schedulers
+set class-of-service schedulers CUST_A_SCHEDULER shaping-rate 10m
+set class-of-service schedulers CUST_B_SCHEDULER shaping-rate 25m
