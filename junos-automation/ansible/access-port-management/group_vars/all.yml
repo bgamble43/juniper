@@ -3,3 +3,6 @@ password: "___notTheRealPassWord___"
 provider_vars:
  user: "{{ username }}"
  passwd: "{{ password }}"
+
+voice_vlan: vlan_d
+voice_vlan_id: 904

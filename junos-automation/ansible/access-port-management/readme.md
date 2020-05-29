@@ -30,3 +30,7 @@
 
 ## To do
 - [ ] Add voice vlan configuration
+  - [ ] voice vlan
+  - [ ] switch-options
+  - [ ]  forwarding-class
+  - [ ] lldp-med
