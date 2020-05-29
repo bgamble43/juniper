@@ -27,3 +27,6 @@
 4) Input port description
 5) Commit Confirm
 6) Commit
+
+## To do
+[ ] Add voice vlan configuration
