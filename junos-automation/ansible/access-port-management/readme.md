@@ -29,4 +29,4 @@
 6) Commit
 
 ## To do
-[ ] Add voice vlan configuration
+- [ ] Add voice vlan configuration
