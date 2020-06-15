@@ -1,0 +1,14 @@
+switch-options {
+    voip {
+{% for interface in interfaces %}
+{% if interface.voice_vlan is defined %}
+        interface {{ interface.name }} {
+            vlan {{ interface.voice_vlan }};
+            forwarding-class assured-forwarding;
+        }
+{% elif interface.voice_vlan is not defined %}
+        delete: interface {{ interface.name }};
+{% endif %}
+{% endfor %}
+    }
+}

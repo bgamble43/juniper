@@ -1,0 +1,23 @@
+interfaces {
+{% for interface in interfaces %}
+    {{ interface.name }} {
+{% if interface.native_vlan_id %}
+        replace: native-vlan-id {{ interface.native_vlan_id }};
+{% endif %}
+        description "{{ interface.description }}";
+        unit 0 {
+            family ethernet-switching {
+{% if interface.vlans|length > 1 %}
+            replace: interface-mode trunk;
+{% elif interface.vlans|length == 1 %}
+            replace: interface-mode access;
+{% endif %}
+            vlan {
+                replace: members [ {{ interface.vlans | list | join(" ") }} ];
+            }
+            storm-control default;
+            }
+        }
+    }
+{% endfor %}
+}

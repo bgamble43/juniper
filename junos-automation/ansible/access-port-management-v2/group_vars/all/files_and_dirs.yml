@@ -1,0 +1,22 @@
+---
+# -------------------------------------------------------------
+#  DIRECTORIES CREATED TO HOLD CONFIG PIECES
+# -------------------------------------------------------------
+tmp_dir: "/tmp/ansible/"
+build_dir: "{{ tmp_dir }}/{{ inventory_hostname }}/"
+
+# -------------------------------------------------------------
+#  CONFIG PIECES
+# -------------------------------------------------------------
+config_file_interfaces: "{{ build_dir }}/interfaces.conf"
+config_file_protocols: "{{ build_dir }}/protocols.conf"
+config_file_poe: "{{ build_dir }}/poe.conf"
+config_file_switch_options: "{{ build_dir }}/switch-options.conf"
+
+# -------------------------------------------------------------
+#  DIRECTORIES CREATED TO HOLD FINAL CONFIG and DIFF FILE
+# -------------------------------------------------------------
+config_dir: "config"
+config_file: "{{ inventory_hostname }}.conf"
+completed_config_file: "{{ config_dir }}/{{ config_file }}"
+diffs_file: "{{ config_dir }}/{{ inventory_hostname }}.diff"

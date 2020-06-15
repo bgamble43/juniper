@@ -1,0 +1,98 @@
+---
+- name: CONFIGURE [interfaces], [poe], [protocols rstp/lldp/lldp-med] and [switch-options]
+  hosts: switches
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  tasks:
+# -------------------------------------------------------------
+#  REMOVE AND CREATE TEMPORARY BUILD DIRECTORY
+# -------------------------------------------------------------
+    - name: REMOVE PREVIOUS BUILD SUBDIRECTORY
+      file:
+        path: "{{ build_dir }}"
+        state: absent
+      delegate_to: localhost
+
+    - name: PREPARE BUILD SUBDIRECTORY
+      file:
+        path: "{{ build_dir }}"
+        state: directory
+      delegate_to: localhost
+
+# -------------------------------------------------------------
+#  REMOVE AND CREATE CONFIG DIRECTORY
+# -------------------------------------------------------------
+    - name: REMOVE PREVIOUS CONFIG DIRECTORY
+      file:
+        path: "{{ config_dir }}"
+        state: absent
+      run_once: yes
+      delegate_to: localhost
+
+    - name: PREPARE CONFIG DIRECTORY
+      file:
+        path: "{{ config_dir }}"
+        state: directory
+      run_once: yes
+      delegate_to: localhost
+
+# -------------------------------------------------------------
+#  BUILD STANZAS
+# -------------------------------------------------------------
+    - name: GENERATE [interfaces] CONFIG
+      template:
+        src: templates/interfaces.j2
+        dest: "{{ config_file_interfaces }}"
+
+    - name: GENERATE [protocols] CONFIG
+      template:
+        src: templates/protocols.j2
+        dest: "{{ config_file_protocols }}"
+
+    - name: GENERATE [poe] CONFIG
+      template:
+        src: templates/poe.j2
+        dest: "{{ config_file_poe }}"
+
+    - name: GENERATE [switch-options] CONFIG
+      template:
+        src: templates/switch-options.j2
+        dest: "{{ config_file_switch_options }}"
+
+    - name: ASSEMBLE FINAL CONFIG STANZAS
+      assemble:
+        src: "{{ build_dir }}"
+        dest: "{{ completed_config_file }}"
+
+    # - fail: msg="Exit to debug templates"
+
+    - name: APPLY CONFIGURATION
+      juniper_junos_config:
+        load: replace
+        src: "{{ completed_config_file }}"
+        provider: "{{ provider_vars }}"
+        format: text
+        ignore_warning: "statement not found"
+        confirmed: 5
+        diff: yes
+        diffs_file: "{{ diffs_file }}"
+        comment: "apm.yml --commit confirm-- issued via Ansible"
+      register: commit_results
+      notify: COMMIT CONFIRMED
+
+    - name: PRINT CONFIG DIFF
+      debug: var=commit_results.diff_lines
+      when: commit_results.diff_lines is defined
+
+  handlers:
+    - name: COMMIT CONFIRMED
+      juniper_junos_config:
+        provider: "{{ provider_vars }}"
+        commit: yes
+        comment: "apm.yml --commit-- issued via Ansible"
+        diff: no
+
+...

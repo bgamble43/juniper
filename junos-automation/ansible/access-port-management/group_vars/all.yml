@@ -1,8 +1,10 @@
-username: notTheRealUser
-password: "___notTheRealPassWord___"
+---
+username: ansible
+password: "labuseonly123"
 provider_vars:
  user: "{{ username }}"
  passwd: "{{ password }}"
+ ssh_private_key_file: "~/.ssh/lab_use_only_rsa"
 
 voice_vlan: vlan_d
 voice_vlan_id: 904

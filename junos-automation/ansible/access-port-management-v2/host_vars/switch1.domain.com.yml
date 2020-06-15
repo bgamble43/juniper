@@ -1,0 +1,23 @@
+---
+interfaces:
+  - name: ge-0/0/7
+    description: Wired port
+    vlans:
+      - vlan_a
+    native_vlan_id:
+    poe: "no"
+  - name: ge-0/0/8
+    description: Office Phone
+    vlans:
+      - vlan_b
+    voice_vlan: vlan_d
+    native_vlan_id:
+    poe: "yes"
+  - name: ge-0/0/9
+    description: Access point
+    vlans:
+      - vlan_b
+      - vlan_c
+    native_vlan_id: 901
+    poe: "yes"
+...

@@ -32,5 +32,5 @@
 - [ ] Add voice vlan configuration
   - [ ] voice vlan
   - [ ] switch-options
-  - [ ]  forwarding-class
+  - [ ] forwarding-class
   - [ ] lldp-med

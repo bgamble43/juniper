@@ -1,0 +1,9 @@
+poe {
+{% for interface in interfaces %}
+{% if interface.poe == "yes" %}
+    interface {{ interface.name }};
+{% elif interface.poe == "no" %}
+    delete: interface {{ interface.name }};
+{% endif %}
+{% endfor %}
+}

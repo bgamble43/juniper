@@ -1,0 +1,28 @@
+protocols {
+    rstp {
+{% for interface in interfaces %}
+        interface {{ interface.name }} {
+            edge;
+            no-root-port;
+        }
+{% endfor %}
+    }
+    lldp {
+{% for interface in interfaces %}
+{% if interface.poe == "yes" %}
+        interface {{ interface.name }};
+{% elif interface.poe == "no" %}
+        interface {{ interface.name }} disable;
+{% endif %}
+{% endfor %}
+    }
+    lldp-med {
+{% for interface in interfaces %}
+{% if interface.poe == "yes" %}
+        interface {{ interface.name }};
+{% elif interface.poe == "no" %}
+        interface {{ interface.name }} disable;
+{% endif %}
+{% endfor %}
+    }
+}
