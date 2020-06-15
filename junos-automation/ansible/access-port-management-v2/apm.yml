@@ -68,7 +68,9 @@
         dest: "{{ completed_config_file }}"
 
     # - fail: msg="Exit to debug templates"
-
+# -------------------------------------------------------------
+#  APPLY CONFIG
+# -------------------------------------------------------------
     - name: APPLY CONFIGURATION
       juniper_junos_config:
         load: replace
