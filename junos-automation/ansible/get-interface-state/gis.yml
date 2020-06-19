@@ -1,0 +1,108 @@
+---
+- name: GET INTERFACE STATS
+  hosts: switches
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+# -------------------------------------------------------------
+#  GET INTERFACE STATS
+# -------------------------------------------------------------
+  - name: GET INTERFACE STATS
+    juniper_junos_rpc:
+      rpcs: get-interface-information
+      formats: xml
+      kwargs:
+        extensive: True
+        interface_name: ge-0/0/*
+      provider: "{{ provider_vars }}"
+    register: int_stats
+
+#  - name: SHOW int_stats CONTENTS
+#    debug:
+#      var: int_stats
+#
+  - name: XPATH THE INTERFACE NAME
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/name
+      content: text
+    register: int_name
+
+  - name: XPATH THE ADMIN STATUS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/admin-status
+      content: text
+    register: admin_status
+
+  - name: XPATH THE OPER STATUS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/oper-status
+      content: text
+    register: oper_status
+
+  - name: XPATH THE LOCAL LINK SPEED
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //local-link-speed
+      content: text
+    register: local_link_speed
+
+  - name: XPATH THE PHYSICAL INTERFACE MTU
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/mtu
+      content: text
+    register: phy_interface_mtu
+
+  - name: XPATH THE INPUT BPS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/traffic-statistics/input-bps
+      content: text
+    register: input_bps
+
+  - name: XPATH THE OUTPUT BPS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/traffic-statistics/output-bps
+      content: text
+    register: output_bps
+
+  - name: XPATH THE INPUT ERRORS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/input-error-list/*
+      content: text
+    register: input_errors
+
+  - name: XPATH THE OUTPUT ERRORS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: //physical-interface/output-error-list/*
+      content: text
+    register: output_errors
+
+  - name: DISPLAY INTERFACE STATS
+    debug:
+      msg: "Interface: {{ int_name.matches[item]['name'] }}, Admin/Oper Status: {{ admin_status.matches[item]['admin-status'] }}/{{ oper_status.matches[item]['oper-status'] }}, Speed: {{ local_link_speed.matches[item]['local-link-speed'] | default(0) }}, MTU: {{ phy_interface_mtu.matches[item]['mtu'] }}, Input Rate: {{ input_bps.matches[item]['input-bps'] }}, Output Rate: {{ output_bps.matches[item]['output-bps'] }}"
+    with_items:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+
+...
