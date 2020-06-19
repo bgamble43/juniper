@@ -16,8 +16,8 @@ Quickly run script to check for anomalies in the form of incorrect speeds, b0rk3
 - [ ] Add duplex
 - [ ] Add errors
 - [ ] Format output
--- [ ] Column headers
--- [ ] Multiple interface stats without individual task headers breaking up the output
+- - [ ] Column headers
+- - [ ] Multiple interface stats without individual task headers breaking up the output
 - [ ] Find better methods of iteration
--- [ ] Handle not knowing the number of interfaces on the switch
--- [ ] Handle not knowing the naming convention of the interfaces (ge-, et-, etc.)
+- - [ ] Handle not knowing the number of interfaces on the switch
+- - [ ] Handle not knowing the naming convention of the interfaces (ge-, et-, etc.)
