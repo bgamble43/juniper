@@ -1,0 +1,221 @@
+---
+- name: GET INTERFACE STATS
+  hosts: switches
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+# -------------------------------------------------------------
+#  GET INTERFACE STATS
+# -------------------------------------------------------------
+  - name: GET INTERFACE STATS
+    juniper_junos_rpc:
+      rpcs: get-interface-information
+      formats: xml
+      kwargs:
+        extensive: True
+        interface_name: ge-0/0/*
+      provider: "{{ provider_vars }}"
+    register: int_stats
+
+  - name: GET INTERFACE STATS AGAIN, STORE IN DIFFERENT VARIABLE
+    juniper_junos_rpc:
+      rpcs: get-interface-information
+      formats: xml
+      kwargs:
+        extensive: True
+        interface_name: ge-0/0/*
+      provider: "{{ provider_vars }}"
+    register: int_stats_2
+
+# -------------------------------------------------------------
+#  DETERMINE LENGTH OF DICTIONARY TO USE FOR ITERATIONS LATER
+# -------------------------------------------------------------
+  - name: DETERMINE LENGTH OF DICTIONARY
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface
+      count: yes
+    register: int_stats_phy_int_count
+
+# -------------------------------------------------------------
+#  SET DUMMY VALUES FOR SPEED AND DUPLEX
+# -------------------------------------------------------------
+
+#  - name: debug int_stats parsed output before
+#    debug:
+#      var: int_stats
+#
+#  - name: debug int_stats parsed output before
+#    debug:
+#      var: int_stats_2
+
+  - name: INITIALIZE LINK SPEED TO 'ZERO'
+    xml:
+      xmlstring: "{{ int_stats_2.stdout }}"
+      xpath: /interface-information/physical-interface/ethernet-autonegotiation/local-info/local-link-speed
+      value: ZERO
+    when: int_stats_2.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] is undefined
+    register: local_link_speed
+
+#  - name: debug local link speed
+#    debug:
+#      var: local_link_speed
+
+#  - name: debug local link speed xmlstring
+#    debug:
+#      var: local_link_speed.xmlstring
+#
+  - name: INITIALIZE DUPLEX TO 'ZERO'
+    xml:
+      xmlstring: "{{ int_stats_2.stdout }}"
+      xpath: /interface-information/physical-interface/ethernet-autonegotiation/local-info/local-link-duplexity
+      value: ZERO
+    when: int_stats_2.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-duplexity'] is undefined
+    register: local_link_duplexity
+
+#  - name: debug duplex
+#    debug:
+#      var: local_link_duplexity
+
+#  - name: SHOW LENGTH OF DICTIONARY
+#    debug:
+#      var: int_stats_phy_int_count.count
+#
+#  - fail:
+#      msg: "Early exit to debug code"
+
+# -------------------------------------------------------------
+#  USE XPATH TO LOAD INTERFACE CHARACTERISTIS INTO VARIABLES
+# -------------------------------------------------------------
+  - name: XPATH THE INTERFACE NAME
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/name
+      content: text
+    register: int_name
+
+  - name: XPATH THE INTERFACE DESCRIPTION
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/description
+      content: text
+    register: int_description
+
+  - name: XPATH THE ADMIN STATUS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/admin-status
+      content: text
+    register: admin_status
+
+  - name: XPATH THE OPER STATUS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/oper-status
+      content: text
+    register: oper_status
+
+  - name: XPATH THE LOCAL LINK SPEED if XMLSTRING
+    xml:
+      xmlstring: "{{ local_link_speed.xmlstring }}"
+      xpath: /interface-information/physical-interface/ethernet-autonegotiation/local-info/local-link-speed
+      content: text
+    register: local_link_speed_2
+    when: local_link_speed is defined
+
+  - name: XPATH THE LOCAL LINK SPEED if STDOUT
+    xml:
+      xmlstring: "{{ int_stats_2.stdout }}"
+      xpath: /interface-information/physical-interface/ethernet-autonegotiation/local-info/local-link-speed
+      content: text
+    register: local_link_speed
+    when: int_stats_2.stdout['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] is defined
+
+  - name: debug link speed
+    debug:
+      var: local_link_speed.matches
+
+  - name: debug link speed 2
+    debug:
+      var: local_link_speed_2.matches
+
+  - name: XPATH THE LOCAL LINK DUPLEX if XMLSTRING
+    xml:
+      xmlstring: "{{ local_link_duplexity.xmlstring }}"
+      xpath: /interface-information/physical-interface/ethernet-autonegotiation/local-info/local-link-duplexity
+      content: text
+    register: local_link_duplexity_2
+    when: local_link_duplexity is defined
+
+  - name: XPATH THE LOCAL LINK DUPLEX if STDOUT
+    xml:
+      xmlstring: "{{ int_stats_2.stdout }}"
+      xpath: /interface-information/physical-interface/ethernet-autonegotiation/local-info/local-link-duplexity
+      content: text
+    register: local_link_duplexity
+    when: int_stats_2.stdout['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] is defined
+
+  - name: debug link duplexity matches
+    debug:
+      var: local_link_duplexity.matches
+
+  - name: debug link duplexity matches 2
+    debug:
+      var: local_link_duplexity_2.matches
+
+  - name: XPATH THE PHYSICAL INTERFACE MTU
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/mtu
+      content: text
+    register: phy_interface_mtu
+
+  - name: XPATH THE INPUT BPS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/traffic-statistics/input-bps
+      content: text
+    register: input_bps
+
+  - name: XPATH THE OUTPUT BPS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/traffic-statistics/output-bps
+      content: text
+    register: output_bps
+
+  - name: XPATH THE INPUT ERRORS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/input-error-list/*
+      content: text
+    register: input_errors
+
+  - name: XPATH THE OUTPUT ERRORS
+    xml:
+      xmlstring: "{{ int_stats.stdout }}"
+      xpath: /interface-information/physical-interface/output-error-list/*
+      content: text
+    register: output_errors
+
+#  - name: DISPLAY INTERFACE STATS
+#    debug:
+#      msg: "Interface: {{ int_name.matches[item|int]['name'] }}, Admin/Oper Status: {{ admin_status.matches[item|int]['admin-status'] }}/{{ oper_status.matches[item|int]['oper-status'] }}, Speed/Duplex: {{ local_link_speed.matches[item|int]['local-link-speed'] | default(0) }}/{{ local_link_duplexity.matches[item|int]['local-link-duplexity'] | default('NA') }}, MTU: {{ phy_interface_mtu.matches[item|int]['mtu'] }}, Input (bps): {{ input_bps.matches[item|int]['input-bps'] }}, Output (bps): {{ output_bps.matches[item|int]['output-bps'] }}"
+#    with_sequence: start=0 end="{{ int_stats_phy_int_count.count - 1 }}" stride=1
+
+# -------------------------------------------------------------
+#  DISPLAY COLUMN HEADERS AND INTERFACE STATS
+#  COLUMNS ARE LEFT JUSTIFIED, 14 CHARS FIXED WIDTH
+# -------------------------------------------------------------
+  - name: DISPLAY INTERFACE COLUMN HEADERS
+    debug:
+      msg:
+      - "Interface:     Description:                 Admin:         Oper:          Speed:         Duplex:        MTU:           Input (bps):   Output(bps):  "
+      - "{{ '{:<14}'.format(int_name.matches[item|int]['name']) }} {{ '{:<28}'.format(int_description.matches[item|int]['description'] | default('NA')) }} {{ '{:<14}'.format(admin_status.matches[item|int]['admin-status']) }} {{ '{:<14}'.format(oper_status.matches[item|int]['oper-status']) }} {{ '{:<14}'.format(local_link_speed.matches[item|int]['local-link-speed'] | default(0)) }} {{ '{:<14}'.format(local_link_duplexity.matches[item|int]['local-link-duplexity'] | default('NA')) }} {{ '{:<14}'.format(phy_interface_mtu.matches[item|int]['mtu']) }} {{ '{:<14}'.format(input_bps.matches[item|int]['input-bps']) }} {{ '{:<14}'.format(output_bps.matches[item|int]['output-bps']) }}"
+    with_sequence: start=0 end="{{ int_stats_phy_int_count.count - 1 }}" stride=1
+
+...

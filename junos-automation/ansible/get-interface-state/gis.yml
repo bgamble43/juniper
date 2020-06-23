@@ -11,98 +11,86 @@
 # -------------------------------------------------------------
 #  GET INTERFACE STATS
 # -------------------------------------------------------------
-  - name: GET INTERFACE STATS
+  - name: GET INTERFACE STATS via RPC
     juniper_junos_rpc:
       rpcs: get-interface-information
       formats: xml
       kwargs:
-        extensive: True
         interface_name: ge-0/0/*
       provider: "{{ provider_vars }}"
-    register: int_stats
+    register: int_stats_rpc
 
-#  - name: SHOW int_stats CONTENTS
-#    debug:
-#      var: int_stats
-#
+# -------------------------------------------------------------
+#  LOAD INTERFACE STATS INTO "int_name" TO QUERY ON .matches
+# -------------------------------------------------------------
   - name: XPATH THE INTERFACE NAME
     xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/name
+      xmlstring: "{{ int_stats_rpc.stdout }}"
+      xpath: /interface-information/physical-interface/name
       content: text
     register: int_name
 
-  - name: XPATH THE ADMIN STATUS
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/admin-status
-      content: text
-    register: admin_status
+#  - name: debug int name
+#    debug:
+#      var: int_name
+#
+#  - name: debug int_name
+#    debug:
+#      var: int_name.matches
+#
+#  - name: debug int_name
+#    debug:
+#      var: (int_name.matches[0] | type_debug)
 
-  - name: XPATH THE OPER STATUS
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/oper-status
-      content: text
-    register: oper_status
+# -------------------------------------------------------------
+#  CREATE INTERFACE LIST TO LOOP "show interfaces" OVER
+# -------------------------------------------------------------
+  - name: CREATE INTERFACE LIST
+    set_fact:
+      int_list: "{{ int_name.matches | map(attribute='name') | list }}"
+    with_sequence: start=0 end="{{ int_name.count - 1 }}" stride=1
 
-  - name: XPATH THE LOCAL LINK SPEED
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //local-link-speed
-      content: text
-    register: local_link_speed
+#  - name: DEBUG INT LIST
+#    debug:
+#      var: (int_list | type_debug)
+#
+#  - name: DEBUG INT LIST
+#    debug:
+#      var: int_list
 
-  - name: XPATH THE PHYSICAL INTERFACE MTU
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/mtu
-      content: text
-    register: phy_interface_mtu
+  # - fail:
 
-  - name: XPATH THE INPUT BPS
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/traffic-statistics/input-bps
-      content: text
-    register: input_bps
+# -------------------------------------------------------------
+#  LOOP INTERFACE LIST TO LOAD "int_stats_cmd" VARIABLE
+# -------------------------------------------------------------
+  - name: GET INTERFACE STATS via COMMAND
+    juniper_junos_command:
+      command: "show interfaces {{item}} extensive"
+      formats: xml
+      provider: "{{ provider_vars }}"
+    loop: "{{ int_list }}"
+    register: int_stats_cmd
 
-  - name: XPATH THE OUTPUT BPS
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/traffic-statistics/output-bps
-      content: text
-    register: output_bps
+#  - name: debug int_stats_cmd
+#    debug:
+#      var: int_stats_cmd
 
-  - name: XPATH THE INPUT ERRORS
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/input-error-list/*
-      content: text
-    register: input_errors
+#  - fail:
 
-  - name: XPATH THE OUTPUT ERRORS
-    xml:
-      xmlstring: "{{ int_stats.stdout }}"
-      xpath: //physical-interface/output-error-list/*
-      content: text
-    register: output_errors
+# -------------------------------------------------------------
+#  DISPLAY COLUMN HEADERS AND INTERFACE STATS
+#  COLUMNS ARE LEFT JUSTIFIED, 14 or 28 CHARS FIXED WIDTH
+# -------------------------------------------------------------
 
-  - name: DISPLAY INTERFACE STATS
+  - name: DISPLAY INTERFACE COLUMN HEADERS
+    vars:
+      msg: |
+            Interface:     Description:                 Admin:         Oper:          Speed:         Duplex:        MTU:           Input (bps):   Output(bps):  "
+            {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['name']) }} {{ '{:<28}'.format(item.parsed_output['interface-information']['physical-interface']['description'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['admin-status'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['oper-status'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['mtu'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['input-bps'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['output-bps'] | default('na')) }}
+    loop: "{{ int_stats_cmd.results }}"
+    loop_control:
+      label: "{{ item.invocation.module_args.host }}"
     debug:
-      msg: "Interface: {{ int_name.matches[item]['name'] }}, Admin/Oper Status: {{ admin_status.matches[item]['admin-status'] }}/{{ oper_status.matches[item]['oper-status'] }}, Speed: {{ local_link_speed.matches[item]['local-link-speed'] | default(0) }}, MTU: {{ phy_interface_mtu.matches[item]['mtu'] }}, Input Rate: {{ input_bps.matches[item]['input-bps'] }}, Output Rate: {{ output_bps.matches[item]['output-bps'] }}"
-    with_items:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 9
-      - 10
-      - 11
+      msg: "{{ msg.split('\n') }}"
 
 ...
