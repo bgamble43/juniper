@@ -79,18 +79,18 @@
 
 # -------------------------------------------------------------
 #  DISPLAY COLUMN HEADERS AND INTERFACE STATS
-#  COLUMNS ARE LEFT JUSTIFIED, 14 or 28 CHARS FIXED WIDTH
+#  COLUMNS ARE LEFT JUSTIFIED, VARYING WIDTHS
 # -------------------------------------------------------------
 
-  - name: DISPLAY INTERFACE COLUMN HEADERS
+  - name: DISPLAY INTERFACE COLUMN HEADERS AND STATS
     vars:
       msg: |
-            Interface:     Description:                 Admin:         Oper:          Speed:         Duplex:        MTU:           Input (bps):   Output(bps):  "
-            {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['name']) }} {{ '{:<28}'.format(item.parsed_output['interface-information']['physical-interface']['description'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['admin-status'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['oper-status'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['mtu'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['input-bps'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['output-bps'] | default('na')) }}
+            Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input (bps): Output(bps): Input errors:  Output errors:
+            {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['name']) }} {{ '{:<22}'.format(item.parsed_output['interface-information']['physical-interface']['description'] | default('na')) }} {{ '{:<8}'.format(item.parsed_output['interface-information']['physical-interface']['admin-status'] | default('na')) }} {{ '{:<8}'.format(item.parsed_output['interface-information']['physical-interface']['oper-status'] | default('na')) }} {{ '{:<12}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('na')) }} {{ '{:<8}'.format(item.parsed_output['interface-information']['physical-interface']['mtu'] | default('na')) }} {{ '{:<12}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['input-bps'] | default('na')) }} {{ '{:<12}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['output-bps'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['input-error-list']['input-errors'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['output-error-list']['output-errors'] | default('na')) }}
     loop: "{{ int_stats_cmd.results }}"
     loop_control:
       label: "{{ item.invocation.module_args.host }}"
     debug:
-      msg: "{{ msg.split('\n') }}"
+      msg: "{{ msg }}"
 
 ...

@@ -15,7 +15,7 @@ Quickly run script to check for anomalies in the form of incorrect speeds, b0rk3
 ## To Do
 - [x] Add duplex
 - [x] Add interface description
-- [ ] Add errors
+- [x] Add errors
 - [ ] Format output
 - - [x] Column headers
 - - [ ] Multiple interface stats without individual task headers breaking up the output
