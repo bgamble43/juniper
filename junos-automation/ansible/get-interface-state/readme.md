@@ -9,6 +9,10 @@ Option to sort interfaces by highest output rate secondarily
   ...
   python version = 3.7.3 (default, Dec 13 2019, 19:58:14) [Clang 11.0.0 (clang-1100.0.33.17)]
 ```
+```
+Name: junos-eznc
+Version: 2.4.1
+```
 ## Scenario:
 Quickly run script to check for anomalies in the form of incorrect speeds, b0rk3d mtus, wonky duplex settings, high input/output, and errors.
 
