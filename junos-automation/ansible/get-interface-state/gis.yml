@@ -6,10 +6,6 @@
   connection: local
   gather_facts: no
 
-  vars:
-    tmp_dir: "/tmp/ansible"
-    tmp_file: "int_stats_cmd.txt"
-
   tasks:
 
 # -------------------------------------------------------------
