@@ -27,7 +27,7 @@ Quickly run script to check for anomalies in the form of incorrect speeds, b0rk3
 - [ ] Handle not knowing the naming convention of the interfaces (ge-, et-, etc.)
 
 ## Bugs
-- [x]Iterations aren't handling absent nodes properly. Instead of having blank entries for things like description, speed, or duplex, if those values aren't defined or if the interface is down/off and the value is empty (doesn't exist in the XML output) the entry is blank, so when I iterate over that sequentially the values "higher up" in the list end up getting squashed down and thus the output is invalid.
+- [x] Iterations aren't handling absent nodes properly. Instead of having blank entries for things like description, speed, or duplex, if those values aren't defined or if the interface is down/off and the value is empty (doesn't exist in the XML output) the entry is blank, so when I iterate over that sequentially the values "higher up" in the list end up getting squashed down and thus the output is invalid.
 
 Solution: Used -- | default('') -- to default to no value in the case the value doesn't exist in the XML string, which would've overwise thrown an error.
 
