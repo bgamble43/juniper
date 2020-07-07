@@ -32,7 +32,7 @@ Quickly run script to check for anomalies in the form of incorrect speeds, b0rk3
 Solution: Used -- | default('') -- to default to no value in the case the value doesn't exist in the XML string, which would've overwise thrown an error.
 
 ## Sample Output
-'''
+```
 sudo ansible-playbook gis.yml -i hosts
 
 PLAY [GET INTERFACE STATS] *********************************************************************************************************************************
@@ -80,5 +80,4 @@ ok: [switch1.domain.com] =>
 
 PLAY RECAP *************************************************************************************************************************************************
 switch1.domain.com         : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-
-'''
+```
