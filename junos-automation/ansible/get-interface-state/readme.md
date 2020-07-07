@@ -66,7 +66,7 @@ ok: [switch1.domain.com] =>
   - 'Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input(bps):  Output(bps): Input errors:  Output errors:'
   - 'ge-0/0/0       Home Office PC Uplink  up       up       1000 Mbps    full-duplex    1514     2104         2888         0              0              '
   - 'ge-0/0/1       Security Cam           up       up       100 Mbps     full-duplex    1514     0            552          0              0              '
-  - 'ge-0/0/2       Access Point       up       up       1000 Mbps    full-duplex    1514     28376        35144        0              0              '
+  - 'ge-0/0/2       Access Point           up       up       1000 Mbps    full-duplex    1514     28376        35144        0              0              '
   - 'ge-0/0/3       Printer                down     down                                 1514     0            0            0              0              '
   - 'ge-0/0/4                              up       down                                 1514     0            0            0              0              '
   - 'ge-0/0/5                              up       down                                 1514     0            0            0              0              '
