@@ -58,7 +58,7 @@
   - name: DISPLAY INTERFACE STATUS WITH COLUMN HEADERS
     vars:
       msg: |
-            Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input (bps): Output(bps): Input errors:  Output errors:
+            Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input(bps):  Output(bps): Input errors:  Output errors:
             {{ clean_out }}
     debug:
       msg: "{{ msg.split('\n') }}"
