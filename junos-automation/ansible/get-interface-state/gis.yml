@@ -6,6 +6,10 @@
   connection: local
   gather_facts: no
 
+  vars:
+    tmp_dir: "/tmp/ansible"
+    tmp_file: "int_stats_cmd.txt"
+
   tasks:
 
 # -------------------------------------------------------------
@@ -17,80 +21,60 @@
       formats: xml
       kwargs:
         interface_name: ge-0/0/*
+        extensive: True
       provider: "{{ provider_vars }}"
     register: int_stats_rpc
 
 # -------------------------------------------------------------
-#  LOAD INTERFACE STATS INTO "int_name" TO QUERY ON .matches
+#  DETERMINE LENGTH OF DICTIONARY TO USE FOR ITERATIONS LATER
 # -------------------------------------------------------------
-  - name: XPATH THE INTERFACE NAME
+  - name: DETERMINE LENGTH OF DICTIONARY
     xml:
       xmlstring: "{{ int_stats_rpc.stdout }}"
-      xpath: /interface-information/physical-interface/name
-      content: text
-    register: int_name
-
-#  - name: debug int name
-#    debug:
-#      var: int_name
-#
-#  - name: debug int_name
-#    debug:
-#      var: int_name.matches
-#
-#  - name: debug int_name
-#    debug:
-#      var: (int_name.matches[0] | type_debug)
-
-# -------------------------------------------------------------
-#  CREATE INTERFACE LIST TO LOOP "show interfaces" OVER
-# -------------------------------------------------------------
-  - name: CREATE INTERFACE LIST
-    set_fact:
-      int_list: "{{ int_name.matches | map(attribute='name') | list }}"
-    with_sequence: start=0 end="{{ int_name.count - 1 }}" stride=1
-
-#  - name: DEBUG INT LIST
-#    debug:
-#      var: (int_list | type_debug)
-#
-#  - name: DEBUG INT LIST
-#    debug:
-#      var: int_list
-
-  # - fail:
+      xpath: /interface-information/physical-interface
+      count: yes
+    register: count
 
 # -------------------------------------------------------------
 #  LOOP INTERFACE LIST TO LOAD "int_stats_cmd" VARIABLE
 # -------------------------------------------------------------
-  - name: GET INTERFACE STATS via COMMAND
-    juniper_junos_command:
-      command: "show interfaces {{item}} extensive"
-      formats: xml
-      provider: "{{ provider_vars }}"
-    loop: "{{ int_list }}"
-    register: int_stats_cmd
 
-#  - name: debug int_stats_cmd
-#    debug:
-#      var: int_stats_cmd
+  - name: LOAD CLEAN OUTPUT VARIABLE
+    set_fact:
+      clean_out:
+        "{{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['name']) }} {{ '{:<22}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['description'] | default('n/a')) }} {{ '{:<8}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['admin-status']) }} {{ '{:<8}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['oper-status']) }} {{ '{:<12}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('n/a')) }} {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('n/a')) }} {{ '{:<8}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['mtu'] | default('n/a')) }} {{ '{:<12}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['input-bps'] | default('n/a')) }} {{ '{:<12}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['output-bps'] | default('n/a')) }} {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['output-error-list']['output-errors'] | default('n/a')) }} {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['input-error-list']['input-errors'] | default('n/a')) | default([]) + [item.response] }}"
+    with_sequence: start=0 end="{{ count.count - 1 }}" stride=1
 
-#  - fail:
+  - name: DISPLAY INTERFACE STATUS WITH COLUMN HEADERS
+    vars:
+      msg: |
+            Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input (bps): Output(bps): Input errors:  Output errors:
+            "{{ clean_out }}"
+    debug:
+      msg: "{{ msg.split('\n') }}"
 
-# -------------------------------------------------------------
-#  DISPLAY COLUMN HEADERS AND INTERFACE STATS
-#  COLUMNS ARE LEFT JUSTIFIED, VARYING WIDTHS
-# -------------------------------------------------------------
+  - fail:
+
+  - name: DISPLAY INTERFACE STATUS WITH COLUMN HEADERS
+    vars:
+      msg: |
+            Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input (bps): Output(bps): Input errors:  Output errors:
+            {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['name']) }} {{ '{:<22}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['description'] | default('n/a')) }} {{ '{:<8}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['admin-status']) }} {{ '{:<8}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['oper-status']) }} {{ '{:<12}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('n/a')) }} {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('n/a')) }} {{ '{:<8}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['mtu'] | default('n/a')) }} {{ '{:<12}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['input-bps'] | default('n/a')) }} {{ '{:<12}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['output-bps'] | default('n/a')) }} {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['output-error-list']['output-errors'] | default('n/a')) }} {{ '{:<14}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['input-error-list']['input-errors'] | default('n/a')) }}
+    with_sequence: start=0 end="{{ count.count - 1 }}" stride=1
+    debug:
+      msg: "{{ msg.split('\n') }}"
+
+  - fail:
 
   - name: DISPLAY INTERFACE COLUMN HEADERS AND STATS
     vars:
       msg: |
             Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input (bps): Output(bps): Input errors:  Output errors:
-            {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['name']) }} {{ '{:<22}'.format(item.parsed_output['interface-information']['physical-interface']['description'] | default('na')) }} {{ '{:<8}'.format(item.parsed_output['interface-information']['physical-interface']['admin-status'] | default('na')) }} {{ '{:<8}'.format(item.parsed_output['interface-information']['physical-interface']['oper-status'] | default('na')) }} {{ '{:<12}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('na')) }} {{ '{:<8}'.format(item.parsed_output['interface-information']['physical-interface']['mtu'] | default('na')) }} {{ '{:<12}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['input-bps'] | default('na')) }} {{ '{:<12}'.format(item.parsed_output['interface-information']['physical-interface']['traffic-statistics']['output-bps'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['input-error-list']['input-errors'] | default('na')) }} {{ '{:<14}'.format(item.parsed_output['interface-information']['physical-interface']['output-error-list']['output-errors'] | default('na')) }}
-    loop: "{{ int_stats_cmd.results }}"
-    loop_control:
-      label: "{{ item.invocation.module_args.host }}"
+            {{ '{:<14}'.format(item['interface-information']['physical-interface']['name']) }} {{ '{:<22}'.format(item['interface-information']['physical-interface']['description'] | default('na')) }} {{ '{:<8}'.format(item['interface-information']['physical-interface']['admin-status'] | default('na')) }} {{ '{:<8}'.format(item['interface-information']['physical-interface']['oper-status'] | default('na')) }} {{ '{:<12}'.format(item['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('na')) }} {{ '{:<14}'.format(item['interface-information']['physical-interface']['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('na')) }} {{ '{:<8}'.format(item['interface-information']['physical-interface']['mtu'] | default('na')) }} {{ '{:<12}'.format(item['interface-information']['physical-interface']['traffic-statistics']['input-bps'] | default('na')) }} {{ '{:<12}'.format(item['interface-information']['physical-interface']['traffic-statistics']['output-bps'] | default('na')) }} {{ '{:<14}'.format(item['interface-information']['physical-interface']['input-error-list']['input-errors'] | default('na')) }} {{ '{:<14}'.format(item['interface-information']['physical-interface']['output-error-list']['output-errors'] | default('na')) }}
+    loop: "{{ int_stats_rpc.parsed_output }}"
+    # loop_control:
+    #  label:
     debug:
-      msg: "{{ msg }}"
+      msg: "{{ msg.split('\n') }}"
 
 ...
