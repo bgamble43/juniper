@@ -11,7 +11,7 @@
 # -------------------------------------------------------------
 #  GET INTERFACE STATS
 # -------------------------------------------------------------
-  - name: GET FE INTERFACE STATS via RPC
+  - name: GET INTERFACE STATS via RPC
     juniper_junos_rpc:
       rpcs: get-interface-information
       formats: xml
@@ -34,6 +34,7 @@
 # -------------------------------------------------------------
 #  POPULATE CLEAN OUTPUT VAR
 # -------------------------------------------------------------
+# The point of this task is to get all the relevant info into one variable, rather than iterating over a variable and then having extra Ansible output clogging things up
 # clean_out|deafult('') initializes the variable as a blank string
 # '{:<15}'.format( ) left justifies text in the parentheses with 15 spaces for characters
 # with_sequence iterates from 0 to count minus 1. This value is substituted in place of [item|int] for each iteration
