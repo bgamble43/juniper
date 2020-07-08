@@ -38,7 +38,7 @@
 # '{:<15}'.format( ) left justifies text in the parentheses with 15 spaces for characters
 # with_sequence iterates from 0 to count minus 1. This value is substituted in place of [item|int] for each iteration
 # we do from 0 to count minus 1 as Juniper starts interface naming from 0
-# The "|int" portion of "[item|int]" was required to force the value for "int" to be an integer
+# The "|int" portion of "[item|int]" was required to force the value for "item" to be an integer
 # we use a "| default('')" in the case that the interface XML output doesn't have a value for that iteration, e.g. in situations where the interface is down
 
   - name: LOAD CLEAN OUTPUT VARIABLE
