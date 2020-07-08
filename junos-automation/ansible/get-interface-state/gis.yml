@@ -40,6 +40,7 @@
 # we do from 0 to count minus 1 as Juniper starts interface naming from 0
 # The "|int" portion of "[item|int]" was required to force the value for "item" to be an integer
 # we use a "| default('')" in the case that the interface XML output doesn't have a value for that iteration, e.g. in situations where the interface is down
+# use "when" to only show output from revenue ports
 
   - name: LOAD CLEAN OUTPUT VARIABLE
     set_fact:
