@@ -35,12 +35,13 @@ Solution: Used ``` | default('') ``` to default to no value in the case the valu
 ## Sample Output
 ```
 sudo ansible-playbook gis.yml -i hosts
+Password:
 
 PLAY [GET INTERFACE STATS] *********************************************************************************************************************************
 
-TASK [GET INTERFACE STATS via RPC] *************************************************************************************************************************
-[WARNING]: The value {'interface_name': 'ge-0/0/*', 'extensive': True} (type dict) in a string field was converted to "{'interface_name': 'ge-0/0/*',
-'extensive': True}" (type string). If this does not look like what you expect, quote the entire value to ensure it does not change.
+TASK [GET FE INTERFACE STATS via RPC] **********************************************************************************************************************
+[WARNING]: The value {'extensive': True} (type dict) in a string field was converted to "{'extensive': True}" (type string). If this does not look like
+what you expect, quote the entire value to ensure it does not change.
 
 ok: [switch1.domain.com]
 
@@ -49,8 +50,8 @@ ok: [switch1.domain.com]
 
 TASK [LOAD CLEAN OUTPUT VARIABLE] **************************************************************************************************************************
 ok: [switch1.domain.com] => (item=0)
-ok: [switch1.domain.com] => (item=1)
-ok: [switch1.domain.com] => (item=2)
+skipping: [switch1.domain.com] => (item=1)
+skipping: [switch1.domain.com] => (item=2)
 ok: [switch1.domain.com] => (item=3)
 ok: [switch1.domain.com] => (item=4)
 ok: [switch1.domain.com] => (item=5)
@@ -60,14 +61,39 @@ ok: [switch1.domain.com] => (item=8)
 ok: [switch1.domain.com] => (item=9)
 ok: [switch1.domain.com] => (item=10)
 ok: [switch1.domain.com] => (item=11)
+ok: [switch1.domain.com] => (item=12)
+ok: [switch1.domain.com] => (item=13)
+skipping: [switch1.domain.com] => (item=14)
+skipping: [switch1.domain.com] => (item=15)
+skipping: [switch1.domain.com] => (item=16)
+skipping: [switch1.domain.com] => (item=17)
+skipping: [switch1.domain.com] => (item=18)
+skipping: [switch1.domain.com] => (item=19)
+skipping: [switch1.domain.com] => (item=20)
+skipping: [switch1.domain.com] => (item=21)
+skipping: [switch1.domain.com] => (item=22)
+skipping: [switch1.domain.com] => (item=23)
+skipping: [switch1.domain.com] => (item=24)
+skipping: [switch1.domain.com] => (item=25)
+skipping: [switch1.domain.com] => (item=26)
+skipping: [switch1.domain.com] => (item=27)
+skipping: [switch1.domain.com] => (item=28)
+skipping: [switch1.domain.com] => (item=29)
+skipping: [switch1.domain.com] => (item=30)
+skipping: [switch1.domain.com] => (item=31)
+skipping: [switch1.domain.com] => (item=32)
+skipping: [switch1.domain.com] => (item=33)
+skipping: [switch1.domain.com] => (item=34)
+skipping: [switch1.domain.com] => (item=35)
+skipping: [switch1.domain.com] => (item=36)
 
 TASK [DISPLAY INTERFACE STATUS WITH COLUMN HEADERS] ********************************************************************************************************
 ok: [switch1.domain.com] =>
   msg:
   - 'Interface:     Description:           Admin:   Oper:    Speed:       Duplex:        MTU:     Input(bps):  Output(bps): Input errors:  Output errors:'
-  - 'ge-0/0/0       Home Office PC Uplink  up       up       1000 Mbps    full-duplex    1514     2104         2888         0              0              '
-  - 'ge-0/0/1       Security Cam           up       up       100 Mbps     full-duplex    1514     0            552          0              0              '
-  - 'ge-0/0/2       Access Point           up       up       1000 Mbps    full-duplex    1514     28376        35144        0              0              '
+  - 'ge-0/0/0       Home Office PC Uplink  up       up       1000 Mbps    full-duplex    1514     1720         3704         0              0              '
+  - 'ge-0/0/1       Security Cam           up       up       100 Mbps     full-duplex    1514     0            824          0              0              '
+  - 'ge-0/0/2       Access point           up       up       1000 Mbps    full-duplex    1514     8880         8816         0              0              '
   - 'ge-0/0/3       Printer                down     down                                 1514     0            0            0              0              '
   - 'ge-0/0/4                              up       down                                 1514     0            0            0              0              '
   - 'ge-0/0/5                              up       down                                 1514     0            0            0              0              '
@@ -76,9 +102,10 @@ ok: [switch1.domain.com] =>
   - 'ge-0/0/8       Office Phone           up       down                                 1514     0            0            0              0              '
   - 'ge-0/0/9       Access point           up       down                                 1514     0            0            0              0              '
   - 'ge-0/0/10      Lab Server iLo         up       down                                 1514     0            0            0              0              '
-  - 'ge-0/0/11      MDF-Sw01               up       up       1000 Mbps    full-duplex    1514     66384        59480        0              0              '
+  - 'ge-0/0/11      MDF-Sw01               up       up       1000 Mbps    full-duplex    1514     25360        15904        0              0              '
   - ''
 
 PLAY RECAP *************************************************************************************************************************************************
 switch1.domain.com         : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
 ```
