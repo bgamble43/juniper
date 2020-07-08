@@ -11,15 +11,15 @@
 # -------------------------------------------------------------
 #  GET INTERFACE STATS
 # -------------------------------------------------------------
-  - name: GET INTERFACE STATS via RPC
+  - name: GET FE INTERFACE STATS via RPC
     juniper_junos_rpc:
       rpcs: get-interface-information
       formats: xml
       kwargs:
-        interface_name: ge-0/0/*
         extensive: True
       provider: "{{ provider_vars }}"
     register: int_stats_rpc
+
 
 # -------------------------------------------------------------
 #  DETERMINE LENGTH OF DICTIONARY TO USE FOR ITERATIONS LATER
@@ -43,8 +43,9 @@
 
   - name: LOAD CLEAN OUTPUT VARIABLE
     set_fact:
-      clean_out: "{{ clean_out|default('') + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['name']) + '{:<23}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['description'] | default('')) + '{:<9}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['admin-status']) + '{:<9}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['oper-status']) + '{:<13}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('')) + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('')) + '{:<9}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['mtu'] | default('')) + '{:<13}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['input-bps'] | default('')) + '{:<13}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['output-bps'] | default('')) + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['input-error-list']['input-errors'] | default('')) + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['output-error-list']['output-errors'] | default('')) + '\n'}}"
+      clean_out: "{{ clean_out|default('') + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['name'])  + '{:<23}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['description'] | default('')) + '{:<9}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['admin-status']) + '{:<9}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['oper-status']) + '{:<13}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-speed'] | default('')) + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['ethernet-autonegotiation']['local-info']['local-link-duplexity'] | default('')) + '{:<9}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['mtu'] | default('')) + '{:<13}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['input-bps'] | default('')) + '{:<13}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['traffic-statistics']['output-bps'] | default('')) + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['input-error-list']['input-errors'] | default('')) + '{:<15}'.format(int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['output-error-list']['output-errors'] | default('')) + '\n'}}"
     with_sequence: start=0 end="{{ count.count - 1 }}" stride=1
+    when: int_stats_rpc.parsed_output['interface-information']['physical-interface'][item|int]['name'] is regex('^fe|ge|mge|xe|et.*')
 
 # -------------------------------------------------------------
 #  OUTPUT HEADERS AND CLEAN VAR, SPLIT ON \n
