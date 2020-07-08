@@ -1,7 +1,5 @@
 # Get Interface State
 Show interface speed, duplex, mtu, input/output rate, and errors
-Option to sort interfaces by highest input rate
-Option to sort interfaces by highest output rate secondarily
 
 ## Versions Used:
 ```
