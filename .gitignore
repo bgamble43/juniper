@@ -2,3 +2,6 @@
 .priv
 tmp
 cred*.py
+priv*.py
+__pycache__/
+*.py[cod]
