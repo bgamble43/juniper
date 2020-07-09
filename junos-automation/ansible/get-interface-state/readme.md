@@ -36,7 +36,6 @@ Quickly run script to check for anomalies in the form of incorrect speeds, b0rk3
 Solution: Used ``` | default('') ``` to default to no value in the case the value doesn't exist in the XML string, which would've overwise thrown an error.
 
 ## Sample Output
-switch2.domain.com is a vQFX thus some interface details are missing
 
 ```
 sudo ansible-playbook gis.yml -i hosts
