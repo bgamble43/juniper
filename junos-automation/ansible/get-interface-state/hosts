@@ -1,3 +1,9 @@
-[switches]
+[switches:children]
+physical
+virtual
+
+[physical]
 switch1.domain.com # EX2300-c
+
+[virtual]
 switch2.domain.com # vQFX
