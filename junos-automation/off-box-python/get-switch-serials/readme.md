@@ -27,7 +27,7 @@ junos-eznc            2.4.1
 ```
 
 ## Scenario:
-Run scripts against list of IPs from text file to populate CSV.
+Run script against list of IPs from text file to generate simple inventory and populate CSV
 
 ## To Do
 
