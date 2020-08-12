@@ -36,3 +36,16 @@ Run script against list of IPs from text file to generate simple inventory and p
 ## Bugs
 
 ## Sample Output
+```
+python3 gss.py
+['172.16.1.1', '172.16.1.2', '172.16.1.3', '172.16.1.4']
+```
+
+## Sample CSV
+```
+Name,Module,Serial,Model,Description,Version
+IDF-Sw01,FPC 0,HA0123456789,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
+IDF-Sw02,FPC 0,HA1234567890,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
+IDF-Sw03,FPC 0,HA2345678901,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
+IDF-Sw04,FPC 0,HA3456789012,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
+```

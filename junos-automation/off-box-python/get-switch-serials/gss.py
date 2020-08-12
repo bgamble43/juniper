@@ -10,7 +10,7 @@ import sys
 
 
 def get_host_and_sn(host):
-    with Device(host=host, user=creds.creds_gvi.username, passwd=creds.creds_gvi.password) as dev:
+    with Device(host=host, user=creds.creds_gss.username, passwd=creds.creds_gss.password) as dev:
         host_chassis_hw = ShowChassisHardwareTable(dev)
         # print(host_chassis_hw)
         host_version_name = ShowVersionTable(dev)
