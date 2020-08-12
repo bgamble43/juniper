@@ -1,7 +1,7 @@
 from jnpr.junos import Device
 from myTables.chassisTables import ShowChassisHardwareTable
 from myTables.versionTables import ShowVersionTable
-import creds.creds_gvi
+import creds.creds_gss
 import sys
 
 # HOSTS = open("ip_addr_file.txt", "r")
