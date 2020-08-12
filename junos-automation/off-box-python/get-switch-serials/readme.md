@@ -12,7 +12,7 @@ Creds are stored in /creds/creds_gss.py in this format:
 # -------------------------------------------------------------
 username = "python"
 # -------------------------------------------------------------
-#  PASSWORD TO ACCESS SSH PRIVATE KEY FILE
+#  PASSWORD TO ACCESS SWITCH
 # -------------------------------------------------------------
 password = "PytH0n!"
 ```
