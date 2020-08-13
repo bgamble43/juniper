@@ -50,8 +50,10 @@ IDF-Sw03,FPC 0,HA2345678901,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
 IDF-Sw04,FPC 0,HA3456789012,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
 ```
 ## Current Debugging Output
+```
 S/N
 ['HxxxxxxxxxxA']
 ['HxxxxxxxxxxB']
 ['HxxxxxxxxxxC']
 ['HxxxxxxxxxxD']
+```
