@@ -190,9 +190,9 @@ if __name__ == "__main__":
         # Read each line of file into separate list item
         HOSTS = f.read().splitlines()
     # Print header
-    print("IP Address,Name,S/N,Model,Version")
+    print("IP Address,Name,Model,Version,S/N")
     # Write header to file
-    output.writelines("IP Address,Name,S/N,Model,Version\n")
+    output.writelines("IP Address,Name,Model,Version,S/N\n")
     # For each IP in file do this:
     for host in HOSTS:
         # Connect to host and get 'show chassis hardware' and 'show version'
