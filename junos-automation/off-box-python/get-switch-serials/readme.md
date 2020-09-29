@@ -12,9 +12,9 @@ Creds are stored in /creds/creds_gss.py in this format:
 # -------------------------------------------------------------
 username = "python"
 # -------------------------------------------------------------
-#  PASSWORD TO ACCESS SWITCH
+#  PASSWORD TO ACCESS SWITCH or PRIVATE KEY FILE
 # -------------------------------------------------------------
-password = "PytH0n!"
+password = "YippyKaiYay"
 ```
 
 ## Versions Used:
@@ -31,29 +31,40 @@ Run script against list of IPs from text file to generate simple inventory and p
 
 ## To Do
 
-- [ ] Test against virtual chassis
+- [x] Test against virtual chassis
+- [ ] Test against physical MX
+- [ ] Test against physical QFX in VC
+- [ ] Test against physical QFX standalone
+- [ ] Test against vSRX
 
 ## Bugs
+I think the Try/Except for connecting to devices could be handled better in
+function 'connect_to_host'
 
-## Sample Output
+## Sample Terminal Output
 ```
-python3 gss.py
-['172.16.1.1', '172.16.1.2', '172.16.1.3', '172.16.1.4']
+IP Address,Name,S/N,Model,Version
+172.16.1.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________2
+172.16.1.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________5
+172.16.1.12,MDF-FW01,srx320,20.2R1-S2.1,C__________4
+172.16.1.244: Device timeout.
+172.16.1.201,NONE,vqfx-10000,18.4R1.8,6_________4
+172.16.1.202,NONE,vqfx-10000,18.4R1.8,2_________0
+172.16.1.203,NONE,vqfx-10000,18.4R1.8,6_________4
+172.16.1.204,NONE,vqfx-10000,18.4R1.8,6_________7
+172.16.1.206,LAB-vMX,vmx,19.4R1.10,V__________D
 ```
 
-## Sample CSV
+## Sample CSV (Identical to terminal output)
 ```
-Name,Module,Serial,Model,Description,Version
-IDF-Sw01,FPC 0,HA0123456789,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
-IDF-Sw02,FPC 0,HA1234567890,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
-IDF-Sw03,FPC 0,HA2345678901,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
-IDF-Sw04,FPC 0,HA3456789012,EX2300-C-12P,EX2300-C-12P,19.4R1-S1.2
-```
-## Current Debugging Output
-```
-S/N
-['HxxxxxxxxxxA']
-['HxxxxxxxxxxB']
-['HxxxxxxxxxxC']
-['HxxxxxxxxxxD']
+IP Address,Name,S/N,Model,Version
+172.16.1.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________2
+172.16.1.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________5
+172.16.1.12,MDF-FW01,srx320,20.2R1-S2.1,C__________4
+172.16.1.244: Device timeout.
+172.16.1.201,NONE,vqfx-10000,18.4R1.8,6_________4
+172.16.1.202,NONE,vqfx-10000,18.4R1.8,2_________0
+172.16.1.203,NONE,vqfx-10000,18.4R1.8,6_________4
+172.16.1.204,NONE,vqfx-10000,18.4R1.8,6_________7
+172.16.1.206,LAB-vMX,vmx,19.4R1.10,V__________D
 ```
