@@ -1,6 +1,6 @@
+import os
 from jnpr.junos import Device
 from jnpr.junos.exception import *
-import os
 import creds.creds_gss
 
 
