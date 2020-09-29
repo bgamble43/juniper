@@ -1,6 +1,6 @@
-# Get Switch Serials
+# Get Switch Serials (Not really just switches though)
 Get switch name, serial number, model number, description and JunOS version from
-list of switches fed via text document.
+list of switches, firewalls and routers fed via text document.
 
 ip_addr_file.txt is a list of IPs of switches that you want to pull data from.
 One IP per line.
