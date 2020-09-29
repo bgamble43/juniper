@@ -1,5 +1,6 @@
 # Get Switch Serials
 (Not really just switches though)
+
 Get switch name, serial number, model number, description and JunOS version from
 list of switches, firewalls and routers fed via text document.
 
