@@ -7,7 +7,7 @@ list of switches, firewalls and routers fed via text document.
 ip_addr_file.txt is a list of IPs of switches that you want to pull data from.
 One IP per line. This file is placed in /input.
 
-An output CSV call host_info.csv is saved to /output.
+An output CSV called host_info.csv is saved to /output.
 
 Creds are stored in /creds/creds_gss.py in this format:
 ```
