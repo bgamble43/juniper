@@ -46,7 +46,7 @@ function 'connect_to_host'
 
 ## Sample Terminal Output
 ```
-IP Address,Name,S/N,Model,Version
+IP Address,Name,Model,Version,S/N
 172.16.2.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________2
 172.16.2.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________5
 172.16.2.12,MDF-FW01,srx320,20.2R1-S2.1,C__________4
@@ -60,7 +60,7 @@ IP Address,Name,S/N,Model,Version
 
 ## Sample CSV (Identical to terminal output)
 ```
-IP Address,Name,S/N,Model,Version
+IP Address,Name,Model,Version,S/N
 172.16.2.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________2
 172.16.2.11,MDF-VC01,ex2300-c-12p,19.4R1-S1.2,H__________5
 172.16.2.12,MDF-FW01,srx320,20.2R1-S2.1,C__________4
