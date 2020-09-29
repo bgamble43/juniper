@@ -31,7 +31,10 @@ Run script against list of IPs from text file to generate simple inventory and p
 
 ## To Do
 
-- [x] Test against virtual chassis
+- [x] Test against physical EX virtual chassis
+- [x] Test against vQFX
+- [x] Test against physical SRX
+- [x] Test against vMX
 - [ ] Test against physical MX
 - [ ] Test against physical QFX in VC
 - [ ] Test against physical QFX standalone
