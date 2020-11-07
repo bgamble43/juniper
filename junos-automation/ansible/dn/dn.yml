@@ -1,0 +1,75 @@
+---
+- name: SET DNS and NTP SERVERS
+  hosts: switches
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    config_root: conf
+    config_dir: "{{ config_root }}/{{ inventory_hostname }}"
+
+  tasks:
+# -------------------------------------------------------------
+#  GET CURRENT DNS  and NTP SERVERS
+# -------------------------------------------------------------
+
+###
+# I had initially applied the config in two stages.
+# The old process was:
+# Build DNS config
+# Build NTP config
+# Apply DNS config
+# Apply NTP config
+# Print DNS config diff
+# Print NTP config diff
+#
+# When doing it that way, the dns_result.diff_lines would show changes
+# even when none were made, and the changes they showed were ntp-related.
+# I figured it was cleaner anyway to build, assemble, apply, then diff, so
+# I did that without much troubleshooting as to why the config diff was
+# printing unexpected results.
+###
+    - name: PREPARE CONFIG SUBDIRECTORIES
+      file:
+        path: "{{ config_dir }}"
+        state: directory
+      delegate_to: localhost
+
+    - name: BUILD DNS CONFIG
+      template:
+        src: templates/dns.j2
+        dest: "{{ config_dir }}/dns.conf"
+
+    - name: BUILD NTP CONFIG
+      template:
+        src: templates/ntp.j2
+        dest: "{{ config_dir }}/ntp.conf"
+
+    - name: ASSEMBLE DEVICE CONFIGS FOR SET CMDS
+      assemble:
+        src: "{{ config_dir }}"
+        dest: "{{ config_dir }}/stanzas.conf"
+
+    - name: APPLY CONFIG
+      juniper_junos_config:
+        provider: "{{ provider_vars }}"
+        load: replace
+        commit: true
+        diff: yes
+        src: "{{ config_dir }}/stanzas.conf"
+      register: result
+
+    - name: PRINT CONFIG DIFF
+      debug: var=result.diff_lines
+      when: result.diff_lines is defined
+
+    - name: REMOVE CONFIG SUBDIRECTORIES
+      file:
+        path: "{{ config_root }}"
+        state: absent
+      run_once: yes
+      delegate_to: localhost
+
+...
