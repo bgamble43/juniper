@@ -22,4 +22,7 @@ Remove config directories.
 Could probably consolidate into a single stanza since both config elements
 exist within the system hierarchy.
 
+## Tested On
+vQFX 19.4R1.10
+
 ## Note
