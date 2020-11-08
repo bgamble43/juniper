@@ -20,6 +20,6 @@ Remove config directories.
 ## To do
 
 ## Tested On
-vQFX 19.4R1.10
+vQFX 17.4R1.16 limited
 
 ## Note
