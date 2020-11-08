@@ -2,3 +2,5 @@
 switch1.domain.com
 switch2.domain.com
 
+[routers]
+router1.domain.com

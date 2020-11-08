@@ -1,6 +1,6 @@
 ---
 - name: GET INTERFACE STATS
-  hosts: physical
+  hosts: switches
   roles:
     - Juniper.junos
   connection: local

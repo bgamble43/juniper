@@ -1,6 +1,6 @@
 ---
 - name: SET DNS and NTP SERVERS
-  hosts: switches
+  hosts: [ switches routers ]
   roles:
     - Juniper.junos
   connection: local

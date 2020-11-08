@@ -64,7 +64,6 @@ def main():
 
     # Display alarms count
     results = requests.get('https://api.mist.com/api/v1/sites/'+sid+'/alarms/count', auth=(u, p))
-
     alarms = json.loads(results.text)
     print("Alarms Active:" ,alarms["total"])
 
