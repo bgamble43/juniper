@@ -12,9 +12,8 @@ Update DNS and NTP servers on group of devices.
 
 ## Automation Steps [High-level]:
 Create config directories.
-Create config stanzas.
-Concatenate config stanzas.
-Apply config stanzas.
+Create config stanza.
+Apply config stanza.
 Print diff.
 Remove config directories.
 
