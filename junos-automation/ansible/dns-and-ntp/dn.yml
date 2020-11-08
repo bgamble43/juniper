@@ -37,20 +37,20 @@
         state: directory
       delegate_to: localhost
 
-    - name: BUILD DNS CONFIG
+    - name: BUILD DNS and NTP CONFIG
       template:
-        src: templates/dns.j2
-        dest: "{{ config_dir }}/dns.conf"
+        src: templates/dns-and-ntp.j2
+        dest: "{{ config_dir }}/dns-and-ntp.conf"
 
-    - name: BUILD NTP CONFIG
-      template:
-        src: templates/ntp.j2
-        dest: "{{ config_dir }}/ntp.conf"
+    # - name: BUILD NTP CONFIG
+    #   template:
+    #     src: templates/ntp.j2
+    #     dest: "{{ config_dir }}/ntp.conf"
 
-    - name: ASSEMBLE DEVICE CONFIGS FOR SET CMDS
-      assemble:
-        src: "{{ config_dir }}"
-        dest: "{{ config_dir }}/stanzas.conf"
+    # - name: ASSEMBLE DEVICE CONFIGS FOR SET CMDS
+    #   assemble:
+    #     src: "{{ config_dir }}"
+    #     dest: "{{ config_dir }}/stanzas.conf"
 
     - name: APPLY CONFIG
       juniper_junos_config:
@@ -58,7 +58,7 @@
         load: replace
         commit: true
         diff: yes
-        src: "{{ config_dir }}/stanzas.conf"
+        src: "{{ config_dir }}/dns-and-ntp.conf"
       register: result
 
     - name: PRINT CONFIG DIFF
