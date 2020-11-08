@@ -21,5 +21,6 @@ Remove config directories.
 
 ## Tested On
 vQFX 17.4R1.16 limited
+vMX 19.4R1.10
 
 ## Note
